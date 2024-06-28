@@ -5,12 +5,13 @@ $nominativo = $_POST['nominativo'];
 $telefono = $_POST['telefono'];
 $data_evento = $_POST['data_evento'];
 $ora_evento = $_POST['ora_evento'];
-$note = $_POST['note'];
 $numero_persone = $_POST['numero_persone'];
+$note = $_POST['note'];
 $rand_uid = uniqid('', true);
+$ip = $_SERVER['REMOTE_ADDR'];
 
-$sql = "INSERT INTO reservation (NOMINATIVO, TELEFONO, DATA, ORA, PERSONE, NOTE, RAND_UID)
-VALUES ('$nominativo', '$telefono', '$data_evento', '$ora_evento', $numero_persone, '$note', '$rand_uid')";
+$sql = "INSERT INTO reservation (NOMINATIVO, TELEFONO, DATA, ORA, PERSONE, NOTE, RAND_UID, UPDTMS, FLGVIEW)
+VALUES ('$nominativo', '$telefono', '$data_evento', '$ora_evento', $numero_persone, '$note', '$rand_uid', NOW(), 'N')";
 
 if ($conn->query($sql) === TRUE) {
     // Numero di telefono predefinito per il messaggio WhatsApp
