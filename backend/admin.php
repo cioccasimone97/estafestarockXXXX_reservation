@@ -9,7 +9,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 // Configurazione del paging
-$results_per_page = 10;
+$results_per_page = 25;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $start_from = ($page - 1) * $results_per_page;
 
@@ -36,13 +36,26 @@ $total_pages = ceil($row_total['total'] / $results_per_page);
         @media (max-width: 767.98px) {
             table.table { min-width: 100% !important; }
         }
+
+        /* Stile per il bottone di logout in alto a destra */
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        /* Stile per il corpo della tabella con scroll infinito */
+        .table-wrapper {
+            max-height: 600px; /* Altezza massima della tabella con scroll */
+            overflow-y: auto; /* Abilita lo scroll verticale se necessario */
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <a href="logout.php" class="btn btn-danger logout-btn">Logout</a>
         <h1>Gestione Prenotazioni</h1>
-        <a href="logout.php" class="btn btn-danger">Logout</a>
-        <div class="table-responsive">
+        <div class="table-responsive table-wrapper">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -56,7 +69,7 @@ $total_pages = ceil($row_total['total'] / $results_per_page);
                         <th>Conferma</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="table-body">
                     <?php
                     if ($result->num_rows > 0) {
                         while($row = $result->fetch_assoc()) {
@@ -94,26 +107,29 @@ $total_pages = ceil($row_total['total'] / $results_per_page);
                 </tbody>
             </table>
         </div>
-        <!-- Navigazione del paging -->
-        <nav>
-            <ul class="pagination">
-                <?php
-                if ($page > 1) {
-                    echo "<li class='page-item'><a class='page-link' href='admin.php?page=" . ($page - 1) . "'>Precedente</a></li>";
-                }
-                for ($i = 1; $i <= $total_pages; $i++) {
-                    if ($i == $page) {
-                        echo "<li class='page-item active'><a class='page-link' href='admin.php?page=" . $i . "'>" . $i . "</a></li>";
-                    } else {
-                        echo "<li class='page-item'><a class='page-link' href='admin.php?page=" . $i . "'>" . $i . "</a></li>";
+        <!-- Navigazione del paging (Javascript per lo scroll infinito) -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                var page = <?php echo $page; ?>;
+                var total_pages = <?php echo $total_pages; ?>;
+                var loading = false;
+
+                $(window).scroll(function() {
+                    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+                        if (page < total_pages && !loading) {
+                            loading = true;
+                            page++;
+                            var url = 'admin.php?page=' + page;
+                            $.get(url, function(data) {
+                                $("#table-body").append(data);
+                                loading = false;
+                            });
+                        }
                     }
-                }
-                if ($page < $total_pages) {
-                    echo "<li class='page-item'><a class='page-link' href='admin.php?page=" . ($page + 1) . "'>Successiva</a></li>";
-                }
-                ?>
-            </ul>
-        </nav>
+                });
+            });
+        </script>
     </div>
 </body>
 </html>
