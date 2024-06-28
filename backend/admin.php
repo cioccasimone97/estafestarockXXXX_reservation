@@ -1,65 +1,73 @@
 <?php
 session_start();
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: login.php');
-    exit;
+include '../config.php';
+
+// Controllo autenticazione
+if (!isset($_SESSION['admin_logged_in'])) {
+    header("Location: login.php");
+    exit();
 }
 
-include 'config.php';
-
-$sql = "SELECT * FROM reservation";
+// Connessione al database e fetch delle prenotazioni
+$sql = "SELECT * FROM reservation ORDER BY DATA, ORA";
 $result = $conn->query($sql);
 ?>
-
-<!DOCTYPE html>
-<html lang="it">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <title>Admin - Prenotazioni</title>
 </head>
 <body>
-    <h1>Elenco Prenotazioni</h1>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Nominativo</th>
-            <th>Telefono</th>
-            <th>Data Evento</th>
-            <th>Ora Evento</th>
-            <th>Numero di Persone</th>
-            <th>Note</th>
-            <th>RAND_UID</th>
-            <th>Data Prenotazione</th>
-            <th>Ultimo Aggiornamento</th>
-            <th>FLGVIEW</th>
-            <th>Azioni</th>
-        </tr>
-        <?php
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                echo "<tr>
-                        <td>".$row["ID"]."</td>
-                        <td>".$row["NOMINATIVO"]."</td>
-                        <td>".$row["TELEFONO"]."</td>
-                        <td>".$row["DATA"]."</td>
-                        <td>".$row["ORA"]."</td>
-                        <td>".$row["PERSONE"]."</td>
-                        <td>".$row["NOTE"]."</td>
-                        <td>".$row["RAND_UID"]."</td>
-                        <td>".$row["UPDTMS"]."</td>
-                        <td>".$row["FLGVIEW"]."</td>
-                        <td><a href='conferma.php?id=".$row["ID"]."'>Conferma</a></td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='12'>Nessuna prenotazione trovata</td></tr>";
-        }
-        ?>
-    </table>
-    <a href="logout.php">Logout</a>
+    <div class="container">
+        <h1>Gestione Prenotazioni</h1>
+        <a href="logout.php" class="btn btn-danger">Logout</a>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nominativo</th>
+                    <th>Telefono</th>
+                    <th>Data</th>
+                    <th>Ora</th>
+                    <th>Persone</th>
+                    <th>Note</th>
+                    <th>Conferma</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if ($result->num_rows > 0) {
+                    while($row = $result->fetch_assoc()) {
+                        echo "<tr>";
+                        echo "<td>" . $row["ID"] . "</td>";
+                        echo "<td>" . $row["NOMINATIVO"] . "</td>";
+                        echo "<td>" . $row["TELEFONO"] . "</td>";
+                        echo "<td>" . $row["DATA"] . "</td>";
+                        echo "<td>" . $row["ORA"] . "</td>";
+                        echo "<td>" . $row["PERSONE"] . "</td>";
+                        echo "<td>" . $row["NOTE"] . "</td>";
+                        echo "<td>";
+                        if ($row["FLGVIEW"] == 'N') {
+                            echo "<form method='post' action='conferma.php'>
+                                    <input type='hidden' name='id' value='" . $row["ID"] . "'>
+                                    <button type='submit' class='btn btn-success'>Conferma</button>
+                                  </form>";
+                        } else {
+                            echo "Confermata";
+                        }
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='8'>Nessuna prenotazione trovata</td></tr>";
+                }
+                $conn->close();
+                ?>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
-
-<?php
-$conn->close();
-?>
