@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../config.php';
+include '../config.php'; // Includi il file di configurazione per la connessione al database
 
 // Controllo autenticazione
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -8,20 +8,23 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit();
 }
 
-// Configurazione del paging
-$results_per_page = 25;
-$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$start_from = ($page - 1) * $results_per_page;
-
-// Connessione al database e fetch delle prenotazioni
-$sql = "SELECT * FROM reservation ORDER BY ID DESC LIMIT $start_from, $results_per_page";
+// Query per ottenere le prenotazioni ordinate per data
+$sql = "SELECT * FROM reservation ORDER BY DATA DESC";
 $result = $conn->query($sql);
 
-// Ottieni il numero totale di prenotazioni
-$sql_total = "SELECT COUNT(ID) AS total FROM reservation";
-$result_total = $conn->query($sql_total);
-$row_total = $result_total->fetch_assoc();
-$total_pages = ceil($row_total['total'] / $results_per_page);
+// Array per contare le prenotazioni per ogni data
+$count_by_date = array();
+
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $date = $row['DATA'];
+        if (!isset($count_by_date[$date])) {
+            $count_by_date[$date] = 1;
+        } else {
+            $count_by_date[$date]++;
+        }
+    }
+}
 ?>
 <!doctype html>
 <html>
@@ -30,7 +33,6 @@ $total_pages = ceil($row_total['total'] / $results_per_page);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <title>Admin - Prenotazioni</title>
     <style>
         /* Stile per rendere la tabella responsive */
         @media (max-width: 767.98px) {
@@ -44,18 +46,46 @@ $total_pages = ceil($row_total['total'] / $results_per_page);
             right: 20px;
         }
 
-        /* Stile per il corpo della tabella con scroll infinito */
-        .table-wrapper {
-            max-height: 600px; /* Altezza massima della tabella con scroll */
-            overflow-y: auto; /* Abilita lo scroll verticale se necessario */
+        /* Stile per i box totalizzatori */
+        .total-box {
+            width: 150px; /* Larghezza fissa per i box */
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
         }
+
+        /* Colori diversi per i box totalizzatori */
+        <?php
+        $color_index = 0;
+        $colors = array('#007bff', '#28a745', '#dc3545', '#ffc107', '#17a2b8'); // Array di colori
+        foreach ($count_by_date as $date => $count) {
+            $formatted_date = date('Y-m-d', strtotime($date)); // Formato data per attributo data-date
+            echo ".total-box[data-date='$formatted_date'] { background-color: " . $colors[$color_index] . "; }\n";
+            $color_index++;
+            if ($color_index >= count($colors)) {
+                $color_index = 0; // Ricomincia dall'inizio se esauriti i colori
+            }
+        }
+        ?>
     </style>
+    <title>Admin - Prenotazioni</title>
 </head>
 <body>
     <div class="container">
-        <a href="logout.php" class="btn btn-danger logout-btn">Logout</a>
         <h1>Gestione Prenotazioni</h1>
-        <div class="table-responsive table-wrapper">
+        <!-- Box totalizzatori -->
+        <?php
+        foreach ($count_by_date as $date => $count) {
+            $formatted_date = date('d-m-Y', strtotime($date));
+            echo "<div class='total-box' data-date='$date'>Data: $formatted_date<br>Totale: $count</div>";
+        }
+        ?>
+        <a href="logout.php" class="btn btn-danger logout-btn">Logout</a>
+        <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -69,8 +99,12 @@ $total_pages = ceil($row_total['total'] / $results_per_page);
                         <th>Conferma</th>
                     </tr>
                 </thead>
-                <tbody id="table-body">
+                <tbody>
                     <?php
+                    // Connessione già inclusa in config.php, non serve qui
+                    $sql = "SELECT * FROM reservation ORDER BY ID DESC";
+                    $result = $conn->query($sql);
+
                     if ($result->num_rows > 0) {
                         while($row = $result->fetch_assoc()) {
                             echo "<tr>";
@@ -102,34 +136,10 @@ $total_pages = ceil($row_total['total'] / $results_per_page);
                     } else {
                         echo "<tr><td colspan='8'>Nessuna prenotazione trovata</td></tr>";
                     }
-                    $conn->close();
                     ?>
                 </tbody>
             </table>
         </div>
-        <!-- Navigazione del paging (Javascript per lo scroll infinito) -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                var page = <?php echo $page; ?>;
-                var total_pages = <?php echo $total_pages; ?>;
-                var loading = false;
-
-                $(window).scroll(function() {
-                    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
-                        if (page < total_pages && !loading) {
-                            loading = true;
-                            page++;
-                            var url = 'admin.php?page=' + page;
-                            $.get(url, function(data) {
-                                $("#table-body").append(data);
-                                loading = false;
-                            });
-                        }
-                    }
-                });
-            });
-        </script>
     </div>
 </body>
 </html>
