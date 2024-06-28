@@ -22,6 +22,9 @@
         <label for="note">Note:</label>
         <textarea id="note" name="note"></textarea><br>
 
+        <label for="numero_persone">Numero di persone:</label>
+        <input type="number" id="numero_persone" name="numero_persone" required><br>
+
         <input type="submit" value="Prenota">
     </form>
 </body>

@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "prenotazioni_evento";
+$dbname = "estafestarockxxxx";
 
 // Creazione connessione
 $conn = new mysqli($servername, $username, $password, $dbname);
