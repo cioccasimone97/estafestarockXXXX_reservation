@@ -1,5 +1,5 @@
 <?php
-include 'config.php'; // Assicurati che questo file includa la connessione al database
+include 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
@@ -56,11 +56,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles/style.css">
     <style>@import url('https://fonts.cdnfonts.com/css/potato-sans');</style>
-    <title>ESTAFESTAROCK 2024</title>
+    <title>ESTAFESTAROCK XXXX</title>
 </head>
 <body>
     <div class="container">
-        <h1>ESTAFESTAROCK 2024</h1>
+        <h1>ESTAFESTAROCK XXXX</h1>
         <h4>Prenota un tavolo</h4>
         <h6><a href="https://instagram.com/estafestarock?igshid=MzRlODBiNWFlZA==" style="color:#c2382e;" target="_blank">@estafestarock</a> <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 448 512"><style>svg{fill:#c2382e}</style><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg> <a href="https://instagram.com/gruppogiovanimontello?igshid=MzRlODBiNWFlZA==" style="color:#c2382e;" target="_blank">@gruppogiovanimontello</a></h6>
         <form method="post" action="">
@@ -105,10 +105,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="form-group">
                 <label for="note" class="form-label lb-lg">Note</label>
-                <textarea id="note" name="note" class="form-control" rows="4" placeholder="Aggiungi eventuali richieste o note"></textarea>
+                <input type="text" id="note" class="form-control" name="note" placeholder="Aggiungi eventuali richieste o note">
             </div>
 
-            <button type="submit" class="btn btn-danger">Richiedi prenotazione tramite WhatsApp</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Richiedi prenotazione tramite WhatsApp</button>
         </form>
     </div>
 
