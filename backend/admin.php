@@ -8,9 +8,20 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit();
 }
 
+// Configurazione del paging
+$results_per_page = 10;
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$start_from = ($page - 1) * $results_per_page;
+
 // Connessione al database e fetch delle prenotazioni
-$sql = "SELECT * FROM reservation ORDER BY DATA, ORA";
+$sql = "SELECT * FROM reservation ORDER BY ID DESC LIMIT $start_from, $results_per_page";
 $result = $conn->query($sql);
+
+// Ottieni il numero totale di prenotazioni
+$sql_total = "SELECT COUNT(ID) AS total FROM reservation";
+$result_total = $conn->query($sql_total);
+$row_total = $result_total->fetch_assoc();
+$total_pages = ceil($row_total['total'] / $results_per_page);
 ?>
 <!doctype html>
 <html>
@@ -68,6 +79,26 @@ $result = $conn->query($sql);
                 ?>
             </tbody>
         </table>
+        <!-- Navigazione del paging -->
+        <nav>
+            <ul class="pagination">
+                <?php
+                if ($page > 1) {
+                    echo "<li class='page-item'><a class='page-link' href='admin.php?page=" . ($page - 1) . "'>Precedente</a></li>";
+                }
+                for ($i = 1; $i <= $total_pages; $i++) {
+                    if ($i == $page) {
+                        echo "<li class='page-item active'><a class='page-link' href='admin.php?page=" . $i . "'>" . $i . "</a></li>";
+                    } else {
+                        echo "<li class='page-item'><a class='page-link' href='admin.php?page=" . $i . "'>" . $i . "</a></li>";
+                    }
+                }
+                if ($page < $total_pages) {
+                    echo "<li class='page-item'><a class='page-link' href='admin.php?page=" . ($page + 1) . "'>Successiva</a></li>";
+                }
+                ?>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>
