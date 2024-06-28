@@ -126,7 +126,7 @@ if ($result->num_rows > 0) {
                             echo "<td>" . $row["PERSONE"] . "</td>";
                             echo "<td>" . $row["NOTE"] . "</td>";
                             echo "<td>";
-                            if ($row["FLGVIEW"] == 'N') {
+                            if ($row["FLGVIEW"] == '') {
                                 echo "<form method='post' action='conferma.php'>
                                         <input type='hidden' name='id' value='" . $row["ID"] . "'>
                                         <button type='submit' class='btn btn-success'>
