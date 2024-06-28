@@ -1,6 +1,6 @@
 .lb-lg {
-    font-size: 19px;
-    margin: 4px;
+    font-size: 17px;
+    margin: 2px;
 }
 
 body {
@@ -18,7 +18,7 @@ h1 {
     text-align:center;
     font-family: 'Potato sans', sans-serif;
     font-weight: bold;
-    font-size: 40px;
+    font-size: 38px;
 }
 
 h3 {
@@ -30,13 +30,13 @@ h4 {
 }
 
 h6 {
-    font-size: 13px;
+    font-size: 11px;
     text-align:center;
 }
 
 .form-control {
     /*background-color: #ffeed0;*/
     display: block;
-    width: 98%;
+    width: 99%;
     margin: auto;
 }
