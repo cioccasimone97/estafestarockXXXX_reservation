@@ -1,0 +1,12 @@
+#Rewrite everything to https
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+Options -Indexes
+Header set Strict-Transport-Security "max-age=31536000" env=HTTPS
+Header always set X-Frame-Options "deny"
+#Header setifempty Referrer-Policy: same-origin
+Header set X-XSS-Protection "1; mode=block"
+Header set X-Permitted-Cross-Domain-Policies "none"
+Header set Referrer-Policy "no-referrer"
+Header set X-Content-Type-Options: nosniff
