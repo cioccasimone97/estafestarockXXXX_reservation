@@ -9,7 +9,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 // Query per ottenere le prenotazioni ordinate per data
-$sql = "SELECT DATA, COUNT(ID) AS total, SUM(CASE WHEN FLGVIEW = 'S' THEN 1 ELSE 0 END) AS confermati 
+$sql = "SELECT DATA, COUNT(ID) AS total, SUM(CASE WHEN FLGVIEW = '1' THEN 1 ELSE 0 END) AS confermati 
         FROM reservation 
         GROUP BY DATA 
         ORDER BY DATA DESC";

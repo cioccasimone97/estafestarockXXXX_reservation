@@ -11,7 +11,7 @@ $rand_uid = uniqid('', true);
 $ip = $_SERVER['REMOTE_ADDR'];
 
 $sql = "INSERT INTO reservation (NOMINATIVO, TELEFONO, DATA, ORA, PERSONE, NOTE, RAND_UID, UPDTMS, FLGVIEW)
-VALUES ('$nominativo', '$telefono', '$data_evento', '$ora_evento', $numero_persone, '$note', '$rand_uid', NOW(), 'N')";
+VALUES ('$nominativo', '$telefono', '$data_evento', '$ora_evento', $numero_persone, '$note', '$rand_uid', NOW(), '')";
 
 if ($conn->query($sql) === TRUE) {
     // Numero di telefono predefinito per il messaggio WhatsApp
