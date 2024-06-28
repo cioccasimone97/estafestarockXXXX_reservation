@@ -9,20 +9,22 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 // Query per ottenere le prenotazioni ordinate per data
-$sql = "SELECT * FROM reservation ORDER BY DATA DESC";
+$sql = "SELECT DATA, COUNT(ID) AS total, SUM(CASE WHEN FLGVIEW = 'S' THEN 1 ELSE 0 END) AS confermati 
+        FROM reservation 
+        GROUP BY DATA 
+        ORDER BY DATA DESC";
 $result = $conn->query($sql);
 
-// Array per contare le prenotazioni per ogni data
+// Array per contare le prenotazioni per ogni data e il numero di confermati
 $count_by_date = array();
 
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
         $date = $row['DATA'];
-        if (!isset($count_by_date[$date])) {
-            $count_by_date[$date] = 1;
-        } else {
-            $count_by_date[$date]++;
-        }
+        $count_by_date[$date] = array(
+            'total' => $row['total'],
+            'confermati' => $row['confermati']
+        );
     }
 }
 ?>
@@ -62,8 +64,10 @@ if ($result->num_rows > 0) {
         <?php
         $color_index = 0;
         $colors = array('#007bff', '#28a745', '#dc3545', '#ffc107', '#17a2b8'); // Array di colori
-        foreach ($count_by_date as $date => $count) {
+        foreach ($count_by_date as $date => $counts) {
             $formatted_date = date('Y-m-d', strtotime($date)); // Formato data per attributo data-date
+            $total = $counts['total'];
+            $confermati = $counts['confermati'];
             echo ".total-box[data-date='$formatted_date'] { background-color: " . $colors[$color_index] . "; }\n";
             $color_index++;
             if ($color_index >= count($colors)) {
@@ -79,9 +83,11 @@ if ($result->num_rows > 0) {
         <h1>Gestione Prenotazioni</h1>
         <!-- Box totalizzatori -->
         <?php
-        foreach ($count_by_date as $date => $count) {
+        foreach ($count_by_date as $date => $counts) {
             $formatted_date = date('d-m-Y', strtotime($date));
-            echo "<div class='total-box' data-date='$date'>Data: $formatted_date<br>Totale: $count</div>";
+            $total = $counts['total'];
+            $confermati = $counts['confermati'];
+            echo "<div class='total-box' data-date='$date'>Data: $formatted_date<br>Totale: $total<br>Confermati: $confermati</div>";
         }
         ?>
         <a href="logout.php" class="btn btn-danger logout-btn">Logout</a>
