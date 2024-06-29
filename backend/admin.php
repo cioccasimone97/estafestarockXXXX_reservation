@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['confirm'])) {
         $sql_update = "UPDATE reservation SET FLGCONF='S', UPDTMS=NOW() WHERE ID=$id";
     } elseif (isset($_POST['cancel'])) {
-        $sql_update = "UPDATE reservation SET FLGANN='S', UPDTMS=NOW() WHERE ID=$id";
+        $sql_update = "UPDATE reservation SET FLGANN='S', FLGCONF='N', UPDTMS=NOW() WHERE ID=$id";
     }
 
     if ($conn->query($sql_update) === TRUE) {
@@ -163,7 +163,7 @@ if ($result_stats->num_rows > 0) {
                             }
                             echo "</td>";
                             echo "<td>";
-                            if ($row["FLGANN"] == 'N' && $row["FLGCONF"] == 'N') {
+                            if ($row["FLGANN"] == 'N') {
                                 echo "<form method='post' action=''>
                                         <input type='hidden' name='id' value='" . $row["ID"] . "'>
                                         <button type='submit' name='cancel' class='btn btn-danger'>
