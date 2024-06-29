@@ -8,18 +8,33 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit();
 }
 
-// Query per ottenere le prenotazioni ordinate per data
-$sql = "SELECT DATA, COUNT(ID) AS total, SUM(CASE WHEN FLGVIEW = '1' THEN 1 ELSE 0 END) AS confermati 
-        FROM reservation 
-        GROUP BY DATA 
-        ORDER BY DATA DESC";
-$result = $conn->query($sql);
+// Gestione della conferma della prenotazione
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_POST['id'];
+    $sql_update = "UPDATE reservation SET FLGCONF='S', UPDTMS=NOW() WHERE ID=$id";
 
-// Array per contare le prenotazioni per ogni data e il numero di confermati
+    if ($conn->query($sql_update) === TRUE) {
+        // Prenotazione confermata con successo
+        header("Location: admin.php");
+        exit();
+    } else {
+        // Errore durante l'aggiornamento della prenotazione
+        echo "Errore durante la conferma: " . $conn->error;
+    }
+}
+
+// Query per ottenere le statistiche delle prenotazioni ordinate per data
+$sql_stats = "SELECT DATA, COUNT(ID) AS total, SUM(CASE WHEN FLGCONF = 'S' THEN 1 ELSE 0 END) AS confermati 
+             FROM reservation 
+             GROUP BY DATA 
+             ORDER BY DATA DESC";
+$result_stats = $conn->query($sql_stats);
+
+// Array per contare le prenotazioni e il numero di confermati per ogni data
 $count_by_date = array();
 
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+if ($result_stats->num_rows > 0) {
+    while($row = $result_stats->fetch_assoc()) {
         $date = $row['DATA'];
         $count_by_date[$date] = array(
             'total' => $row['total'],
@@ -107,12 +122,12 @@ if ($result->num_rows > 0) {
                 </thead>
                 <tbody>
                     <?php
-                    // Connessione già inclusa in config.php, non serve qui
-                    $sql = "SELECT * FROM reservation ORDER BY ID DESC";
-                    $result = $conn->query($sql);
+                    // Query per ottenere le prenotazioni ordinate per ID
+                    $sql_reservations = "SELECT * FROM reservation ORDER BY ID DESC";
+                    $result_reservations = $conn->query($sql_reservations);
 
-                    if ($result->num_rows > 0) {
-                        while($row = $result->fetch_assoc()) {
+                    if ($result_reservations->num_rows > 0) {
+                        while($row = $result_reservations->fetch_assoc()) {
                             echo "<tr>";
                             echo "<td>" . $row["ID"] . "</td>";
                             echo "<td>" . $row["NOMINATIVO"] . "</td>";
@@ -126,8 +141,8 @@ if ($result->num_rows > 0) {
                             echo "<td>" . $row["PERSONE"] . "</td>";
                             echo "<td>" . $row["NOTE"] . "</td>";
                             echo "<td>";
-                            if ($row["FLGVIEW"] == '') {
-                                echo "<form method='post' action='conferma.php'>
+                            if ($row["FLGCONF"] == 'N') {
+                                echo "<form method='post' action=''S>
                                         <input type='hidden' name='id' value='" . $row["ID"] . "'>
                                         <button type='submit' class='btn btn-success'>
                                             <i class='fas fa-check'></i> <!-- Icona di spunta -->
