@@ -39,6 +39,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $whatsapp_number='3492982845';
         $whatsappUrl = "https://wa.me/".$whatsapp_number."?text=" . $message;
         
+        // Messaggio
+        $confirm_message = "Prenotazione effettuata con successo! Ora verrai reindirizzato a WhatsApp, invia il messaggio così come proposto senza apportare modifiche";
+        
+        // Stampa l'alert e il reindirizzamento
+        echo "<script type='text/javascript'>
+                alert('$confirm_message');
+            </script>";
+
         // Redirect verso WhatsApp
         header("Location: " . $whatsappUrl);
         exit();
