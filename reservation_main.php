@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Preparazione del messaggio per WhatsApp
         $message = urlencode(
-            "_*ESTAFESTAROCK 2024*_\n\n" .
+            ".         _*ESTAFESTAROCK XXXX*_ \n\n" .
             "===========================\n" .
             "*Richiesta prenotazione tavolo*\n" .
             "Nome e Cognome: " . $name . "\n" .
