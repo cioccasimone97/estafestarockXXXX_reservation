@@ -45,10 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Stampa l'alert e il reindirizzamento
         echo "<script type='text/javascript'>
                 alert('$confirm_message');
-            </script>";
-
-        // Redirect verso WhatsApp
-        header("Location: " . $whatsappUrl);
+                window.location.href='$whatsappUrl';
+              </script>";
         exit();
     } else {
         echo "Errore durante la prenotazione. Riprova più tardi.";
