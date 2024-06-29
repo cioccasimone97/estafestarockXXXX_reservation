@@ -28,7 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Query per ottenere le statistiche delle prenotazioni ordinate per data
-$sql_stats = "SELECT DATA, COUNT(ID) AS total, SUM(CASE WHEN FLGCONF = 'S' THEN 1 ELSE 0 END) AS confermati 
+$sql_stats = "SELECT DATA, COUNT(ID) AS total, SUM(CASE WHEN FLGCONF = 'S' THEN 1 ELSE 0 END) AS confermati,
+              SUM(CASE WHEN FLGANN = 'S' THEN 1 ELSE 0 END) as annullati,
+              SUM(CASE WHEN FLGANN <> 'S' and FLGCONF <> 'S' THEN 1 ELSE 0 END) as da_confermare
              FROM reservation 
              GROUP BY DATA 
              ORDER BY DATA DESC";
@@ -42,7 +44,9 @@ if ($result_stats->num_rows > 0) {
         $date = $row['DATA'];
         $count_by_date[$date] = array(
             'total' => $row['total'],
-            'confermati' => $row['confermati']
+            'confermati' => $row['confermati'],
+            'annullati' => $row['annullati'],
+            'da_confermare' => $row['da_confermare']
         );
     }
 }
@@ -87,6 +91,8 @@ if ($result_stats->num_rows > 0) {
             $formatted_date = date('Y-m-d', strtotime($date)); // Formato data per attributo data-date
             $total = $counts['total'];
             $confermati = $counts['confermati'];
+            $annullati = $counts['annullati'];
+            $da_confermare = $counts['da_confermare'];
             echo ".total-box[data-date='$formatted_date'] { background-color: " . $colors[$color_index] . "; }\n";
             $color_index++;
             if ($color_index >= count($colors)) {
@@ -110,7 +116,9 @@ if ($result_stats->num_rows > 0) {
             $formatted_date = date('d-m-Y', strtotime($date));
             $total = $counts['total'];
             $confermati = $counts['confermati'];
-            echo "<div class='total-box' data-date='$date'>Data: $formatted_date<br>Totale: $total<br>Confermati: $confermati</div>";
+            $annullati = $counts['annullati'];
+            $da_confermare = $counts['da_confermare'];
+            echo "<div class='total-box' data-date='$date'>Data: $formatted_date<br>Totale: $total<br>Confermati: $confermati<br>Annullati: $annullati<br>Da confermare: $da_confermare</div>";
         }
         ?>
         <a href="logout.php" class="btn btn-danger logout-btn">Logout</a>
