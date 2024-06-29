@@ -8,7 +8,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit();
 }
 
-// Gestione della conferma della prenotazione
+// Gestione della conferma o annullamento della prenotazione
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = $_POST['id'];
     if (isset($_POST['confirm'])) {
@@ -94,6 +94,10 @@ if ($result_stats->num_rows > 0) {
             }
         }
         ?>
+        /* Stile per il testo barrato */
+        .text-strike {
+            text-decoration: line-through;
+        }
     </style>
     <title>Admin - Prenotazioni</title>
 </head>
@@ -122,7 +126,7 @@ if ($result_stats->num_rows > 0) {
                         <th>Persone</th>
                         <th>Note</th>
                         <th>Conferma</th>
-                        <th>Annulla</th> <!-- Nuova colonna per annullare -->
+                        <th>Annulla</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -133,7 +137,8 @@ if ($result_stats->num_rows > 0) {
 
                     if ($result_reservations->num_rows > 0) {
                         while($row = $result_reservations->fetch_assoc()) {
-                            echo "<tr>";
+                            $strike_class = $row["FLGANN"] == 'S' ? 'text-strike' : '';
+                            echo "<tr class='$strike_class'>";
                             echo "<td>" . $row["ID"] . "</td>";
                             echo "<td>" . $row["NOMINATIVO"] . "</td>";
                             echo "<td>" . $row["TELEFONO"] . "</td>";
@@ -146,26 +151,26 @@ if ($result_stats->num_rows > 0) {
                             echo "<td>" . $row["PERSONE"] . "</td>";
                             echo "<td>" . $row["NOTE"] . "</td>";
                             echo "<td>";
-                            if ($row["FLGCONF"] == 'N') {
+                            if ($row["FLGCONF"] == 'N' && $row["FLGANN"] == 'N') {
                                 echo "<form method='post' action=''>
                                         <input type='hidden' name='id' value='" . $row["ID"] . "'>
                                         <button type='submit' name='confirm' class='btn btn-success'>
                                             <i class='fas fa-check'></i> <!-- Icona di spunta -->
                                         </button>
                                       </form>";
-                            } else {
+                            } elseif ($row["FLGCONF"] == 'S') {
                                 echo "<span class='text-success'><i class='fas fa-check'></i></span>"; // Icona di spunta confermata
                             }
                             echo "</td>";
-                            echo "<td>"; // Colonna per annullare
-                            if ($row["FLGANN"] == 'N') {
+                            echo "<td>";
+                            if ($row["FLGANN"] == 'N' && $row["FLGCONF"] == 'N') {
                                 echo "<form method='post' action=''>
                                         <input type='hidden' name='id' value='" . $row["ID"] . "'>
                                         <button type='submit' name='cancel' class='btn btn-danger'>
                                             <i class='fas fa-times'></i> <!-- Icona di annullamento -->
                                         </button>
                                       </form>";
-                            } else {
+                            } elseif ($row["FLGANN"] == 'S') {
                                 echo "<span class='text-danger'><i class='fas fa-times'></i></span>"; // Icona di annullamento
                             }
                             echo "</td>";
