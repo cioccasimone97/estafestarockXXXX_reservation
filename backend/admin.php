@@ -164,12 +164,22 @@ if ($result_stats->num_rows > 0) {
                             echo "</td>";
                             echo "<td>";
                             if ($row["FLGANN"] == 'N') {
-                                echo "<form method='post' action=''>
-                                        <input type='hidden' name='id' value='" . $row["ID"] . "'>
-                                        <button type='submit' name='cancel' class='btn btn-danger'>
+                                // Bottone Annulla con conferma in JavaScript
+                                echo "<button type='button' class='btn btn-danger' onclick='confirmCancellation({$row["ID"]})'>
                                             <i class='fas fa-times'></i> <!-- Icona di annullamento -->
                                         </button>
-                                      </form>";
+                                        <div id='cancelConfirm{$row["ID"]}' style='display:none; margin-top: 5px;'>
+                                            <span>Conferma annullamento?</span>
+                                            <form id='cancelForm{$row["ID"]}' method='post' action=''>
+                                                <input type='hidden' name='id' value='" . $row["ID"] . "'>
+                                                <button type='submit' name='cancel' class='btn btn-danger'>
+                                                    Conferma
+                                                </button>
+                                                <button type='button' onclick='hideConfirmation({$row["ID"]})' class='btn btn-secondary'>
+                                                    Annulla
+                                                </button>
+                                            </form>
+                                        </div>";
                             } elseif ($row["FLGANN"] == 'S') {
                                 echo "<span class='text-danger'><i class='fas fa-times'></i></span>"; // Icona di annullamento
                             }
@@ -184,5 +194,17 @@ if ($result_stats->num_rows > 0) {
             </table>
         </div>
     </div>
+
+    <script>
+        // Funzione per mostrare il messaggio di conferma
+        function confirmCancellation(id) {
+            document.getElementById('cancelConfirm' + id).style.display = 'block';
+        }
+
+        // Funzione per nascondere il messaggio di conferma
+        function hideConfirmation(id) {
+            document.getElementById('cancelConfirm' + id).style.display = 'none';
+        }
+    </script>
 </body>
 </html>
