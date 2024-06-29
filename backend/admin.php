@@ -11,15 +11,19 @@ if (!isset($_SESSION['admin_logged_in'])) {
 // Gestione della conferma della prenotazione
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = $_POST['id'];
-    $sql_update = "UPDATE reservation SET FLGCONF='S', UPDTMS=NOW() WHERE ID=$id";
+    if (isset($_POST['confirm'])) {
+        $sql_update = "UPDATE reservation SET FLGCONF='S', UPDTMS=NOW() WHERE ID=$id";
+    } elseif (isset($_POST['cancel'])) {
+        $sql_update = "UPDATE reservation SET FLGANN='S', UPDTMS=NOW() WHERE ID=$id";
+    }
 
     if ($conn->query($sql_update) === TRUE) {
-        // Prenotazione confermata con successo
+        // Prenotazione confermata o annullata con successo
         header("Location: admin.php");
         exit();
     } else {
         // Errore durante l'aggiornamento della prenotazione
-        echo "Errore durante la conferma: " . $conn->error;
+        echo "Errore durante l'aggiornamento: " . $conn->error;
     }
 }
 
@@ -118,6 +122,7 @@ if ($result_stats->num_rows > 0) {
                         <th>Persone</th>
                         <th>Note</th>
                         <th>Conferma</th>
+                        <th>Annulla</th> <!-- Nuova colonna per annullare -->
                     </tr>
                 </thead>
                 <tbody>
@@ -142,9 +147,9 @@ if ($result_stats->num_rows > 0) {
                             echo "<td>" . $row["NOTE"] . "</td>";
                             echo "<td>";
                             if ($row["FLGCONF"] == 'N') {
-                                echo "<form method='post' action=''S>
+                                echo "<form method='post' action=''>
                                         <input type='hidden' name='id' value='" . $row["ID"] . "'>
-                                        <button type='submit' class='btn btn-success'>
+                                        <button type='submit' name='confirm' class='btn btn-success'>
                                             <i class='fas fa-check'></i> <!-- Icona di spunta -->
                                         </button>
                                       </form>";
@@ -152,10 +157,22 @@ if ($result_stats->num_rows > 0) {
                                 echo "<span class='text-success'><i class='fas fa-check'></i></span>"; // Icona di spunta confermata
                             }
                             echo "</td>";
+                            echo "<td>"; // Colonna per annullare
+                            if ($row["FLGANN"] == 'N') {
+                                echo "<form method='post' action=''>
+                                        <input type='hidden' name='id' value='" . $row["ID"] . "'>
+                                        <button type='submit' name='cancel' class='btn btn-danger'>
+                                            <i class='fas fa-times'></i> <!-- Icona di annullamento -->
+                                        </button>
+                                      </form>";
+                            } else {
+                                echo "<span class='text-danger'><i class='fas fa-times'></i></span>"; // Icona di annullamento
+                            }
+                            echo "</td>";
                             echo "</tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='8'>Nessuna prenotazione trovata</td></tr>";
+                        echo "<tr><td colspan='9'>Nessuna prenotazione trovata</td></tr>";
                     }
                     ?>
                 </tbody>
