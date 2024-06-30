@@ -22,7 +22,7 @@
 
         // Al caricamento della pagina, tenta di aprire il link
         window.onload = function() {
-            var url = "<?php echo isset($_GET['url']) ? htmlspecialchars($_GET['url'], ENT_QUOTES, 'UTF-8') : 'https://example.com'; ?>";
+            var url = "<?php echo 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '/reservation_main.php'; ?>";
             openLinkExternally(url);
         }
     </script>
@@ -32,7 +32,7 @@
     <p>Se non vieni reindirizzato automaticamente, <a id="manual-link" href="#">clicca qui</a>.</p>
     <script>
         document.getElementById('manual-link').onclick = function() {
-            var url = "<?php echo isset($_GET['url']) ? htmlspecialchars($_GET['url'], ENT_QUOTES, 'UTF-8') : 'https://example.com'; ?>";
+            var url = "<?php echo 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '/reservation_main.php'; ?>";
             openLinkExternally(url);
             return false;
         }
